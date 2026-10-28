@@ -27,7 +27,18 @@ Main changes:
 - An account on an ACE (or other emulator) server. `@cloak` and `@teleloc`
   need admin rights, so in practice this means your own server.
 - The Asheron's Call dat files from your own install.
-- .NET SDK 10.0.300 or newer (see `client/global.json`) and a Vulkan GPU.
+- .NET SDK 10.0.300 or newer (see `client/global.json`).
+- A graphics card that supports Vulkan 1.3. Vulkan is a graphics standard,
+  like DirectX, that the client uses to draw the 3D world. Most graphics
+  cards from about 2015 onward support it with a current driver: roughly
+  NVIDIA GTX 900 series and newer, AMD RX 400 series and newer, and Intel
+  6th gen Core (HD 500 series) and newer integrated graphics. Older cards
+  such as the NVIDIA GTX 600 and 700 series stop at Vulkan 1.2 and will not
+  work. Keep your graphics driver up to date, since Vulkan support comes
+  from the driver. To check, run `vulkaninfo --summary` (it comes with the
+  Vulkan SDK and some drivers) and look for an apiVersion of 1.3 or higher.
+  Or just start the client: if Vulkan 1.3 is missing it stops at startup
+  with an error asking you to install or update a Vulkan 1.3 driver.
 - ffmpeg for recording and encoding. Python 3 is used by `enc.sh`.
 
 ## Build
