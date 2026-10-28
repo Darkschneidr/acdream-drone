@@ -71,4 +71,8 @@
     <EmbeddedResource Include="..\..\assets\icons\acdream-client-256.png"
                       LogicalName="AcDream.App.Rendering.Icons.acdream-client-256.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\assets\drone-routes\*.path"
+                      LogicalName="AcDream.App.DroneRoutes.%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>

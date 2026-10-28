@@ -58,7 +58,7 @@ to where the character stands (x east, y north, z up), unless the file has
 | `hold s` | stay put |
 | `loop` | repeat the path |
 
-Sample (`drone/paths/sample.path`):
+Sample (`client/assets/drone-routes/sample.path`):
 
 ```
 delay 14
@@ -69,7 +69,35 @@ hold 30
 
 That waits 14 seconds, does a 220 degree orbit 13 m out and 4 m up over 26
 seconds, pulls back while still looking at the center, then holds.
-More examples are in `drone/paths/`.
+The other built-in moves are in `client/assets/drone-routes/` and make good
+starting points for your own files.
+
+## Built-in routes
+
+The client ships with a few camera moves and a list of town stops, so you can
+fly something without writing any files. Set `ACDREAM_DRONE_ROUTE` to a move,
+a town, or both as `town:move`:
+
+```
+$env:ACDREAM_DRONE_ROUTE = "list"               # print the names and exit
+$env:ACDREAM_DRONE_ROUTE = "holtburg"           # go to Holtburg, default move
+$env:ACDREAM_DRONE_ROUTE = "shoushi:rise-high"  # go to Shoushi, rising shot
+$env:ACDREAM_DRONE_ROUTE = "orbit-sky"          # fly a move where you stand
+```
+
+Moves: `dolly`, `dolly-high`, `orbit-high` (default for towns), `orbit-rev`,
+`orbit-rev-high`, `orbit-sky`, `rise`, `rise-high`, `sample`.
+
+Towns: `holtburg`, `yaraq`, `shoushi`, `arwic`, `cragstone`, `qalabar`,
+`zaikhal`, `linvak`, `plateau`, `eastwatch`, `tethana`, `kara`, `bluespire`,
+`greenspire`, `redspire`, `ayanbaqur`, `hebianto`, `sawato`, `baishi`,
+`aljalima`, `neydisa`, `timaru`, `stonehold`, `banditcastle`, `asheron`.
+
+A town writes a small probe script that cloaks you and runs `@teleloc` to the
+stop, so it needs the same admin rights as the manual steps below. A route
+turns on `ACDREAM_DRONE_CAM` for you. If `ACDREAM_DRONE_PATH` is set, that file
+is used instead of the built-in move, and if `ACDREAM_UI_PROBE_SCRIPT` is set,
+that script is used instead of the built-in town.
 
 ## Recording a clip
 
@@ -79,6 +107,9 @@ More examples are in `drone/paths/`.
    ```
    drone/make-probe.sh drone/probe.txt "0xA9B40019 [84 7.1 95]"
    ```
+
+   Point `ACDREAM_UI_PROBE_SCRIPT` at the file, or skip this step and use a
+   built-in town route.
 
 2. Edit `drone/drone-env.ps1` with your server, account, and dat folder, then
    start the client from the same PowerShell window:
@@ -110,5 +141,11 @@ More examples are in `drone/paths/`.
 - `ACDREAM_DRONE_FOLLOW=<name>` trails a player instead of flying a path.
   `ACDREAM_DRONE_FOLLOW_ALLOW` lists names allowed to steer it by tell.
   It is empty by default.
+- Start position settings, mostly for running offline with no server. With
+  `ACDREAM_FLY_POS="x,y,z"` (meters, local to the landblock) the camera starts
+  there, and the drone anchors on it. `ACDREAM_FLY_YAW`, `ACDREAM_FLY_PITCH`
+  and `ACDREAM_FLY_FOV` are in degrees. `ACDREAM_OFFLINE_CENTER` is the
+  landblock to load first, in hex (for example `0xA9B4FFFF`, the default,
+  which is Holtburg).
 - Other knobs: `ACDREAM_DRONE_SPEED`, `ACDREAM_DRONE_MIN_AGL`,
   `ACDREAM_DRONE_TETHER`, `ACDREAM_DRONE_BANK`, `ACDREAM_DRONE_START`.

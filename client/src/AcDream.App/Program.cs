@@ -10,6 +10,8 @@ using Serilog;
 GraphicalHostPlatformServices graphicalPlatform =
     GraphicalHostPlatformServices.Resolve();
 graphicalPlatform.ConfigureWindowBackend();
+if (!DroneRoutes.Apply())
+    return 0;
 ApplicationPathSet applicationPaths = graphicalPlatform.Paths;
 
 Log.Logger = new LoggerConfiguration()

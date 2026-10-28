@@ -464,9 +464,7 @@ public sealed class RuntimeItemInteraction : IDisposable
             || _sendPutItemInContainer is null
             || _objects.Get(itemId) is not { } item
             || !IsOwnedByPlayer(itemId)
-            || (containerId != _playerGuid() && !IsOwnedByPlayer(containerId)
-                && !(_objects.Get(containerId) is { } houseContainer
-                    && (houseContainer.HookItemTypes != 0u || houseContainer.WeenieClassId == 9687u))))
+            || (containerId != _playerGuid() && !IsOwnedByPlayer(containerId)))
         {
             return false;
         }

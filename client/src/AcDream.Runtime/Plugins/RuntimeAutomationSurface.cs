@@ -4585,8 +4585,7 @@ internal sealed class RuntimeAutomationSurface
         if (containerObjectId == 0u
             || objects.Get(containerObjectId) is not { } container
             || (containerObjectId != playerId
-                && !IsPlayerOwned(container, playerId, objects)
-                && !IsHouseContainer(container)))
+                && !IsPlayerOwned(container, playerId, objects)))
         {
             return new(PluginItemCommandStatus.InvalidTarget);
         }
@@ -4836,14 +4835,6 @@ internal sealed class RuntimeAutomationSurface
             ? new(PluginItemCommandStatus.Started)
             : new(PluginItemCommandStatus.Refused);
     }
-
-    /// <summary>
-    /// A house hook (sent with hook item types) or a house storage chest
-    /// (weenie 9687). The server decides whether this player may use it
-    /// (house owner, guest storage rights); the client only stops refusing it.
-    /// </summary>
-    private static bool IsHouseContainer(ClientObject container) =>
-        container.HookItemTypes != 0u || container.WeenieClassId == 9687u;
 
     private static bool IsPlayerOwned(
         ClientObject item,

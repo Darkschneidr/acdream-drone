@@ -2944,8 +2944,10 @@ internal sealed class RuntimeSetPositionState : IDisposable
                 canonicalRequest,
                 _handleSetPositionCollisionsCallback);
             // DroneCam patch: player portal arrivals at a door/step can touch building
-            // geometry and fail NoValidPosition forever. Retry small lifts, then rings,
-            // keeping the requested cell so server authority still matches.
+            // geometry and fail NoValidPosition forever. Try small lifts, then small
+            // horizontal rings, and prefer a spot that stays in the requested cell so
+            // server authority still matches. If none does, fall back to the nearest
+            // valid spot in an adjacent cell instead of staying in portal space.
             if (result.Error == PhysicsSetPositionError.NoValidPosition
                 && (operation.Record.ServerGuid & 0xF0000000u) == 0x50000000u
                 && Environment.GetEnvironmentVariable("ACDREAM_NO_EVAL_NUDGE") != "1")
