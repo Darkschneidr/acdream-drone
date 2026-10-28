@@ -18,6 +18,16 @@ internal static class DroneCam
     public static Vector3 Anchor { get; private set; }
     public static Func<float, float, float?>? TerrainZ { get; set; }
 
+    /// <summary>Closes the window. Closing logs the character off, then disconnects.</summary>
+    public static Action? RequestClose { get; set; }
+    /// <summary>ACDREAM_DRONE_KEEP_OPEN=1 leaves the client running after a route ends.</summary>
+    static readonly bool KeepOpen = Environment.GetEnvironmentVariable("ACDREAM_DRONE_KEEP_OPEN") == "1";
+    /// <summary>Set by a town route: the client only closes after its probe script has run.</summary>
+    public static bool ExpectTeleport { get; set; }
+    /// <summary>Set when the UI probe script (cloak and teleport) has finished.</summary>
+    public static volatile bool ProbeDone;
+    static bool _pathDone, _closeRequested;
+
     static readonly float Speed = F("ACDREAM_DRONE_SPEED", 10f);
     static readonly float Boost = F("ACDREAM_DRONE_BOOST", 40f);
     static readonly float TurnRate = F("ACDREAM_DRONE_TURN", 45f) * MathF.PI / 180f;
@@ -110,6 +120,7 @@ internal static class DroneCam
             _pathStamp = stamp;
             _path = DronePath.Parse(File.ReadAllLines(PathFile));
             _pathT = -_path.Delay;
+            _pathDone = false;
             Console.WriteLine(FormattableString.Invariant(
                 $"[drone] path loaded: {_path.Count} segments, {_path.Duration:F1}s, loop={_path.Loop}"));
         }
@@ -120,11 +131,21 @@ internal static class DroneCam
         }
     }
 
+    static void TryClose()
+    {
+        if (_closeRequested || KeepOpen || RequestClose is null) return;
+        if (ExpectTeleport && !ProbeDone) return;
+        _closeRequested = true;
+        Console.WriteLine("[drone] route finished, closing (set ACDREAM_DRONE_KEEP_OPEN=1 to stay)");
+        RequestClose();
+    }
+
     public readonly record struct Keys(bool Fwd, bool Back, bool StrafeL, bool StrafeR,
         bool TurnL, bool TurnR, bool Up, bool Down, bool PitchUp, bool PitchDown, bool Fast);
 
     public static void Update(FlyCamera fly, double dt, Keys k)
     {
+        if (_pathDone) TryClose();
         _pathCheck += dt;
         if (_pathCheck > 1.0) { _pathCheck = 0; LoadPath(force: false); }
 
@@ -143,7 +164,11 @@ internal static class DroneCam
                 fly.Position = pos; fly.Yaw = yaw; fly.Pitch = pitch;
                 _pathRoll = path.SampleRoll(t);
                 if (!path.Loop && _pathT > path.Duration)
+                {
                     Console.WriteLine("[drone] path done");
+                    _pathDone = true;
+                    TryClose();
+                }
             }
         }
         else

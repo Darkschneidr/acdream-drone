@@ -1,0 +1,45 @@
+ACDREAM DRONE: QUICK START (WINDOWS)
+
+No .NET install is needed. Everything the client needs is in the app folder.
+
+You need:
+- Windows 10 or 11, 64-bit.
+- A graphics card with Vulkan 1.3 and a current driver. Most cards from about
+  2015 on: NVIDIA GTX 900 series and newer, AMD RX 400 and newer, Intel 6th gen
+  Core (HD 500 series) and newer. If it is missing, the client stops at startup
+  with an error asking for a Vulkan 1.3 driver.
+- Your Asheron's Call dat files.
+- An account with admin rights on an ACE server. Town routes use @cloak and
+  @teleloc, which need admin.
+
+Steps:
+1. Unzip this folder anywhere, for example C:\acdream-drone.
+2. Open settings.ini in Notepad and fill in server, port, account, character
+   slot, dat folder and route. Blank lines are asked for at startup.
+3. Double-click Start-Drone.bat. The first time it asks for the password and
+   saves it to password.txt in this folder. Delete that file to forget it.
+   The first run also builds acdream.pak next to your dat files, which takes
+   a few minutes.
+4. To see every route name, set route=list and start it once.
+
+The client logs in, cloaks and teleports to the town as soon as the world has
+loaded (a few seconds; it gives up waiting after 45 seconds and goes anyway),
+then flies the camera move. When the move ends it logs off, disconnects and
+closes by itself. To keep it open instead, set keepopen=1 in settings.ini
+(or set the environment variable ACDREAM_DRONE_KEEP_OPEN=1).
+
+Recording and encoding (optional):
+- Download ffmpeg separately from https://ffmpeg.org/download.html (a Windows
+  build such as the one from gyan.dev) and note where ffmpeg.exe is.
+- While the client flies, in PowerShell from this folder:
+    .\rec.ps1 -Name holtburg -Sec 130 -Ffmpeg C:\path\to\ffmpeg.exe
+  The raw clip lands in .\clips\holtburg.mp4.
+- To trim to a 26 second 1280x720 clip with fades and a poster jpg, run
+  enc.sh from a bash shell (Git Bash or WSL) with ffmpeg and Python 3:
+    ./enc.sh clips/holtburg.mp4 65 26 holtburg
+  65 is the start second and 26 the length. Adjust them to the part you want.
+
+Custom flight paths and probe scripts are covered in the README on GitHub.
+Not affiliated with or endorsed by the Asheron's Call rights holders (Turbine,
+WB Games, Daybreak). No game files are included; bring your own dat files.
+License: MIT, see LICENSE. Based on OpenAC.

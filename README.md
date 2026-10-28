@@ -7,6 +7,10 @@ The character logs in, cloaks, and stands still. The camera detaches and flies
 a path you write in a text file. Nothing about the camera is sent to the
 server. You record the screen with ffmpeg and trim the result into a clip.
 
+This project is not affiliated with or endorsed by the Asheron's Call rights
+holders (Turbine, WB Games, Daybreak). No game files are included. You must
+bring your own Asheron's Call dat files.
+
 ## Quick start (Windows download)
 
 No .NET install needed.
@@ -21,7 +25,8 @@ No .NET install needed.
 You still need Vulkan 1.3 graphics, your own dat files, and an admin account
 on your server (see What you need below). `QUICKSTART.txt` in the zip covers
 recording and encoding. ffmpeg is a separate download from
-https://ffmpeg.org/download.html.
+https://ffmpeg.org/download.html. The launcher files in the zip are kept in
+`drone/package/`.
 
 ## Upstream and license
 
@@ -125,6 +130,15 @@ stop, so it needs the same admin rights as the manual steps below. A route
 turns on `ACDREAM_DRONE_CAM` for you. If `ACDREAM_DRONE_PATH` is set, that file
 is used instead of the built-in move, and if `ACDREAM_UI_PROBE_SCRIPT` is set,
 that script is used instead of the built-in town.
+
+A town route teleports as soon as the client reports the world is loaded and
+the character is placed, usually a few seconds after login. If that never
+comes, it goes ahead after 45 seconds.
+
+When a route finishes (a path without `loop`), the client logs the character
+off, disconnects and closes on its own. Set `ACDREAM_DRONE_KEEP_OPEN=1` to
+leave it running instead (in the Windows download, `keepopen=1` in
+`settings.ini`).
 
 ## Recording a clip
 

@@ -106,12 +106,16 @@ internal static class DroneRoutes
                 var file = Path.Combine(dir, "probe-" + town.ToLowerInvariant() + ".txt");
                 File.WriteAllLines(file, new[]
                 {
-                    "sleep 30000",
+                    // Go as soon as the world is in and the player is placed;
+                    // fall back to a fixed wait if readiness never reports.
+                    "wait world-ready 45000 continue",
+                    "sleep 1500",
                     "command @cloak on",
-                    "sleep 12000",
+                    "sleep 1000",
                     "command @teleloc " + loc,
                 });
                 Environment.SetEnvironmentVariable("ACDREAM_UI_PROBE_SCRIPT", file);
+                DroneCam.ExpectTeleport = true;
                 Console.WriteLine($"[drone] built-in town '{town}' ({label}) at {loc}");
             }
         }

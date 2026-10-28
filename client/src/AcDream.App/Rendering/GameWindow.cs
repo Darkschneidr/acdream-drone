@@ -668,6 +668,7 @@ public sealed class GameWindow :
 
         _window = Window.Create(options);
         IWindow window = _window;
+        DroneCam.RequestClose = window.Close;
         _pluginWindowHandle = new AcDream.App.Plugins.SilkPluginHostWindowTarget(window);
         PluginWindowIsMinimized = window.WindowState == WindowState.Minimized;
         _runtimeSettings.BindDisplayWindow(

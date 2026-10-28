@@ -269,6 +269,7 @@ public sealed class RetailUiAutomationScriptRunner : IDisposable
             ReleaseHeldInputs();
             _completed = true;
             _log("UI probe script complete");
+            AcDream.App.Rendering.DroneCam.ProbeDone = true;
         }
     }
 
@@ -435,6 +436,12 @@ public sealed class RetailUiAutomationScriptRunner : IDisposable
         {
             if (_runtime is null) return Stop(command, "world lifecycle automation is unavailable");
             if (_runtime.IsWorldReady) return true;
+            if (p.Any(x => x.Equals("continue", StringComparison.OrdinalIgnoreCase)))
+            {
+                if (!HasExceeded(TimeoutMs(p, 2, 60000))) return false;
+                _log($"line {command.LineNumber}: world readiness not reported in time, continuing");
+                return true;
+            }
             return WaitOrTimeout(command, TimeoutMs(p, 2, 60000), "world readiness");
         }
 
