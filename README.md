@@ -1,0 +1,114 @@
+# acdream-drone
+
+A fork of the OpenAC (acdream) Asheron's Call client with a scripted drone
+camera, plus the small scripts I use to record town flyover clips with it.
+
+The character logs in, cloaks, and stands still. The camera detaches and flies
+a path you write in a text file. Nothing about the camera is sent to the
+server. You record the screen with ffmpeg and trim the result into a clip.
+
+## Upstream and license
+
+The client in `client/` is based on OpenAC by Erik Nihlen and contributors,
+https://github.com/eriknihlen/openac, MIT licensed. Their `LICENSE` and
+`NOTICE.md` (third party notices, including WorldBuilder) are kept in
+`client/`. This repo is a plain copy with the drone changes on top, not a
+GitHub fork. The drone scripts are MIT too.
+
+Main changes:
+
+- `client/src/AcDream.App/Rendering/DroneCam.cs`: free camera and path playback
+- `client/src/AcDream.App/Rendering/DroneFollow.cs`: optional follow mode
+- `ACDREAM_HIDE_UI_DRAW=1` hides the UI but keeps the probe script running
+- streaming follows the camera, and a few teleport and portal arrival fixes
+
+## What you need
+
+- An account on an ACE (or other emulator) server. `@cloak` and `@teleloc`
+  need admin rights, so in practice this means your own server.
+- The Asheron's Call dat files from your own install.
+- .NET SDK 10.0.300 or newer (see `client/global.json`) and a Vulkan GPU.
+- ffmpeg for recording and encoding. Python 3 is used by `enc.sh`.
+
+## Build
+
+```
+cd client
+dotnet restore AcDream.slnx
+dotnet build AcDream.slnx -c Release
+```
+
+The first run bakes `acdream.pak` next to your dat files. See
+`client/docs/building-and-running.md` for the bake step and the rest.
+
+## Flight path files
+
+One directive per line. `#` starts a comment. Positions are in meters relative
+to where the character stands (x east, y north, z up), unless the file has
+`abs`. Angles are degrees. Segment times are seconds and eased unless you add
+`linear` at the end. Any segment can take `roll=deg`.
+
+| directive | arguments |
+|---|---|
+| `delay s` | wait before the path starts (lets the world load) |
+| `start x y z yaw pitch` | starting pose |
+| `wp x y z yaw pitch s` | fly to a pose |
+| `look x y z tx ty tz s` | fly to x y z while facing the point tx ty tz |
+| `orbit cx cy cz radius height fromDeg sweepDeg s` | circle around a center |
+| `hold s` | stay put |
+| `loop` | repeat the path |
+
+Sample (`drone/paths/sample.path`):
+
+```
+delay 14
+orbit 8.7 8.9 1.2 13 4 -110 220 26
+look -25 -20 9 8.7 8.9 1.5 12
+hold 30
+```
+
+That waits 14 seconds, does a 220 degree orbit 13 m out and 4 m up over 26
+seconds, pulls back while still looking at the center, then holds.
+More examples are in `drone/paths/`.
+
+## Recording a clip
+
+1. Make a probe script that cloaks you and teleports to a spot. Cells and
+   positions use the `@teleloc` format. Some town stops are in `drone/stops.tsv`.
+
+   ```
+   drone/make-probe.sh drone/probe.txt "0xA9B40019 [84 7.1 95]"
+   ```
+
+2. Edit `drone/drone-env.ps1` with your server, account, and dat folder, then
+   start the client from the same PowerShell window:
+
+   ```
+   . .\drone\drone-env.ps1
+   dotnet run --project client\src\AcDream.App\AcDream.App.csproj -c Release
+   ```
+
+   `ACDREAM_WORLD_TIME` sets the time of day (0.5 is about noon).
+
+3. While it flies, record the desktop:
+
+   ```
+   .\drone\rec.ps1 -Name holtburg -Sec 130
+   ```
+
+4. Trim and encode to 1280x720 at 30 fps with fades and a poster jpg:
+
+   ```
+   drone/enc.sh clips/holtburg.mp4 65 26 holtburg
+   ```
+
+   The default crop strips a window border. Pass your own crop as the fifth
+   argument, or `""` for none. `BR=3000k` raises the bitrate.
+
+## Notes
+
+- `ACDREAM_DRONE_FOLLOW=<name>` trails a player instead of flying a path.
+  `ACDREAM_DRONE_FOLLOW_ALLOW` lists names allowed to steer it by tell.
+  It is empty by default.
+- Other knobs: `ACDREAM_DRONE_SPEED`, `ACDREAM_DRONE_MIN_AGL`,
+  `ACDREAM_DRONE_TETHER`, `ACDREAM_DRONE_BANK`, `ACDREAM_DRONE_START`.
