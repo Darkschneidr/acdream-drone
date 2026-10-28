@@ -7,6 +7,22 @@ The character logs in, cloaks, and stands still. The camera detaches and flies
 a path you write in a text file. Nothing about the camera is sent to the
 server. You record the screen with ffmpeg and trim the result into a clip.
 
+## Quick start (Windows download)
+
+No .NET install needed.
+
+1. Download `acdream-drone-win-x64.zip` from the
+   [Releases](../../releases) page and unzip it anywhere.
+2. Open `settings.ini` in Notepad and fill in your server, port, account,
+   character slot, dat folder and route. Blank lines are asked for at startup.
+3. Double-click `Start-Drone.bat`. It asks for the password once and saves it
+   to `password.txt` in that folder.
+
+You still need Vulkan 1.3 graphics, your own dat files, and an admin account
+on your server (see What you need below). `QUICKSTART.txt` in the zip covers
+recording and encoding. ffmpeg is a separate download from
+https://ffmpeg.org/download.html.
+
 ## Upstream and license
 
 The client in `client/` is based on OpenAC by Erik Nihlen and contributors,
@@ -122,13 +138,18 @@ that script is used instead of the built-in town.
    Point `ACDREAM_UI_PROBE_SCRIPT` at the file, or skip this step and use a
    built-in town route.
 
-2. Edit `drone/drone-env.ps1` with your server, account, and dat folder, then
-   start the client from the same PowerShell window:
+2. Copy `drone/session.example.json` to `drone/session.json` and fill in
+   your server, port, account, character slot (0 is the first) and dat
+   folder. Put the account password alone in a text file and point
+   `credential.reference` at it. Keep both files out of git. Pick a route in
+   `drone/drone-env.ps1`, then start the client:
 
    ```
-   . .\drone\drone-env.ps1
-   dotnet run --project client\src\AcDream.App\AcDream.App.csproj -c Release
+   .\drone\run.ps1 -App client\src\AcDream.App\bin\Release\net10.0\AcDream.App.exe
    ```
+
+   The session file is what logs in and picks the character. Without it the
+   client stops at character select and the route never starts.
 
    `ACDREAM_WORLD_TIME` sets the time of day (0.5 is about noon).
 

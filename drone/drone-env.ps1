@@ -1,10 +1,7 @@
-# Fill these in, then dot-source this file before starting the client.
-$env:ACDREAM_DAT_DIR   = "C:\Games\Asheron's Call"
-$env:ACDREAM_LIVE      = "1"
-$env:ACDREAM_TEST_HOST = "127.0.0.1"
-$env:ACDREAM_TEST_PORT = "9000"
-$env:ACDREAM_TEST_USER = "youraccount"
-$env:ACDREAM_TEST_PASS = "yourpassword"
+# Camera and route settings. run.ps1 dot-sources this file.
+# Server, account, character and dat folder live in session.json
+# (copy session.example.json). The password goes in its own text file.
+$env:ACDREAM_NO_AUDIO     = "1"
 $env:ACDREAM_HIDE_UI_DRAW = "1"
 $env:ACDREAM_WORLD_TIME   = "0.5"
 $env:ACDREAM_DRONE_CAM    = "1"

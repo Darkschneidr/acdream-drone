@@ -36,3 +36,5 @@ obj/
 clips/
 drone/probe.txt
 *.pak
+drone/session.json
+drone/password.txt

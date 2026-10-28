@@ -1,0 +1,4 @@
+{"version":1,
+ "process":{"content":{"datDirectory":"C:\\Games\\Asheron's Call","preparedAssetPath":"C:\\Games\\Asheron's Call\\acdream.pak"}},
+ "sessions":[{"id":"drone","endpoint":{"host":"127.0.0.1","port":9000},"account":"youraccount","character":{"index":0},
+  "credential":{"provider":"file","reference":"C:\\acdream-drone\\password.txt"},"plugins":[]}]}
